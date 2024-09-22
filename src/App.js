@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ChatWindow } from './components/ChatWindow';
+import { Navbar } from './components/Navbar';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import { RegisterPage } from './pages/RegisterPage';
+import { Login } from './pages/Login';
+import { Profile } from './pages/Profile';
+import { Footer } from './components/Footer ';
+
+const App = () => {
+    return (
+        <Router>
+            <div className="flex flex-col h-screen"> 
+                <Navbar />  {/* Siempre visible */}
+                <div className="flex-1 overflow-auto"> {/* Permitir que el contenido se muestre */}
+                    <Routes>
+                        <Route path="/" element={<ChatWindow />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/profile" element={<Profile />} />
+                    </Routes>
+                </div>
+                <Footer />
+            </div>
+        </Router>
+    );
+};
 
 export default App;
