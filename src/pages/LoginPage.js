@@ -1,10 +1,10 @@
 import React from 'react';
-import { RegisterForm } from '../components/RegisterForm';
+import { LoginForm } from '../components/LoginForm';
 
-export const RegisterPage = () => {
+export const LoginPage = () => {
     return (
         <div className="flex justify-center items-center h-screen bg-gradient-to-r from-black to-indigo-900">
-            <RegisterForm />
+            <LoginForm />
         </div>
     );
 };
