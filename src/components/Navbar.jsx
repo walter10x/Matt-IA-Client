@@ -1,36 +1,55 @@
-import { useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { FaHome, FaUserPlus, FaSignInAlt, FaUser, FaComments, FaSignOutAlt } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-
+import { UserContext } from '../context/UserContext';
 export const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [activeItem, setActiveItem] = useState(location.pathname);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userEmail, setUserEmail] = useState(null);
+    const [activeItem, setActiveItem] = React.useState(location.pathname);
+    const { isLoggedIn, setIsLoggedIn, userEmail, setUserEmail } = useContext(UserContext);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            setIsLoggedIn(true);
-            // Aquí puedes hacer una llamada al backend para obtener el email si es necesario
-            setUserEmail("user@example.com"); // Esto es solo un ejemplo, reemplázalo con tu lógica para obtener el email.
-        } else {
+            fetchUserEmail(token);
+        }
+    }, []);
+
+    const fetchUserEmail = async (token) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/me`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setUserEmail(data.user.email);
+                setIsLoggedIn(true);
+            } else {
+                console.error('Error al obtener el email del usuario:', await response.text());
+                setIsLoggedIn(false);
+                setUserEmail(null);
+            }
+        } catch (error) {
+            console.error('Error de red al obtener el email:', error);
             setIsLoggedIn(false);
             setUserEmail(null);
         }
-    }, []); // Solo se ejecuta cuando el componente se monta
+    };
 
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Eliminar el token al cerrar sesión
-        setIsLoggedIn(false); // Cambiar el estado de autenticación
-        setUserEmail(null); // Limpiar el email
-        setActiveItem('/'); // Cambiar la ruta activa
-        navigate('/'); // Redirigir a la página principal
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        setUserEmail(null);
+        setActiveItem('/');
+        navigate('/');
     };
 
     const handleLogin = () => {
-        navigate('/login'); // Redirigir al login
+        navigate('/login');
     };
 
     const navItems = [

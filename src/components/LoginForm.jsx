@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { UserContext } from '../context/UserContext';
 
 export const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
+    const { setIsLoggedIn, setUserEmail } = useContext(UserContext);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -24,10 +26,8 @@ export const LoginForm = () => {
             
             if (response.ok && data.access_token) {
                 localStorage.setItem('token', data.access_token);
-                
-                
-                
-                
+                setIsLoggedIn(true);
+                setUserEmail(email);
                 setMessage('Inicio de sesión exitoso');
                 setTimeout(() => navigate('/chat'), 1000); // Redirigir después de 1 segundo
             } else {
