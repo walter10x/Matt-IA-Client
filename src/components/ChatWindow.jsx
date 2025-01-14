@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaPaperPlane, FaUser } from 'react-icons/fa';
+import { useParams } from 'react-router-dom';
 
 const LoadingIndicator = () => (
     <div className="flex items-center justify-center h-8">
@@ -12,6 +13,7 @@ const LoadingIndicator = () => (
 );
 
 export const ChatWindow = () => {
+    const { threadId } = useParams();
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -23,7 +25,26 @@ export const ChatWindow = () => {
 
     useEffect(scrollToBottom, [messages]);
 
-    const handleSend = async () => {
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/messages`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                setMessages(data);
+            } catch (error) {
+                console.error('Error fetching messages:', error);
+            }
+        };
+
+        fetchMessages();
+    }, []);
+
+    const handleSend = async (e) => {
+        e.preventDefault();
         if (!input.trim()) return;
 
         const userMessage = { role: 'user', content: input.trim() };
@@ -32,12 +53,13 @@ export const ChatWindow = () => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/ask`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/messages`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ prompt: input.trim() }),
+                body: JSON.stringify({ content: input.trim() }),
             });
 
             if (!response.ok) {
@@ -45,7 +67,7 @@ export const ChatWindow = () => {
             }
 
             const data = await response.json();
-            const assistantMessage = { role: 'assistant', content: data.response };
+            const assistantMessage = { role: 'assistant', content: data.content };
 
             setMessages(prevMessages => [...prevMessages, assistantMessage]);
         } catch (error) {
@@ -94,27 +116,22 @@ export const ChatWindow = () => {
                     <div ref={messagesEndRef} />
                 </div>
                 <div className="bg-gradient-to-r from-indigo-800 to-gray-900 p-4 border-t border-gray-700">
-                    <div className="flex items-center">
+                    <form onSubmit={handleSend} className="flex items-center">
                         <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleSend();
-                                }
-                            }}
                             className="flex-grow bg-white-800 text-black border border-gray-700 rounded-lg p-2 h-12 focus:outline-none focus:ring-2 focus:ring-white mr-2"
                             placeholder="Escribe un mensaje..."
                         />
                         <button 
-                            onClick={handleSend} 
+                            type="submit"
                             className="bg-gradient-to-r from-black to-slate-600 text-white rounded-lg px-6 h-12 hover:bg-white transition duration-300 focus:outline-none focus:ring-2 focus:ring-white flex items-center justify-center ml-2"
                         >
                             <FaPaperPlane className="mr-2" />
                             Enviar
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

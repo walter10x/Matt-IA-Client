@@ -9,6 +9,7 @@ export const LoginForm = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setMessage(''); // Limpiar mensaje anterior
         
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
@@ -21,13 +22,19 @@ export const LoginForm = () => {
             
             const data = await response.json();
             
-            if (response.ok) {
+            if (response.ok && data.access_token) {
+                localStorage.setItem('token', data.access_token);
+                
+                
+                
+                
                 setMessage('Inicio de sesión exitoso');
-                navigate('/profile'); // Redirigir al perfil después del inicio de sesión exitoso
+                setTimeout(() => navigate('/chat'), 1000); // Redirigir después de 1 segundo
             } else {
                 setMessage(data.error || 'Error en el inicio de sesión');
             }
         } catch (error) {
+            console.error('Error durante el login:', error);
             setMessage('Error al conectarse al servidor');
         }
     };
@@ -67,7 +74,7 @@ export const LoginForm = () => {
                     Iniciar sesión
                 </button>
 
-                {message && <p className="mt-4 text-center text-red-500">{message}</p>}
+                {message && <p className={`mt-4 text-center ${message.includes('exitoso') ? 'text-green-500' : 'text-red-500'}`}>{message}</p>}
 
                 <p className="mt-4 text-center text-gray-600">
                     ¿No tienes una cuenta?{' '}
