@@ -6,20 +6,20 @@ import { RegisterPage } from './pages/RegisterPage';
 import { LoginPage } from './pages/LoginPage';
 import { Profile } from './pages/Profile';
 import { Footer } from './components/Footer';
-import { ChatWindow } from './components/ChatWindow';
-import PrivateRoute from './components/PrivateRoute'; // Importar PrivateRoute
+import { ChatPage } from './pages/ChatPage'; // Importa ChatPage en lugar de ChatWindow
+import PrivateRoute from './components/PrivateRoute';
 
 const App = () => {
     return (
         <Router>
             <div className="flex flex-col h-screen"> 
-                <Navbar />  {/* Siempre visible */}
-                <div className="flex-1 overflow-auto"> {/* Permitir que el contenido se muestre */}
+                <Navbar />
+                <div className="flex-1 overflow-auto">
                     <Routes>
                         <Route path="/" element={<HomePage />} />
-                        <Route path="/chat" element={<PrivateRoute><ChatWindow /></PrivateRoute>} /> {/* Usar PrivateRoute */}
+                        <Route path="/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} /> {/* Usa ChatPage aquí */}
                         <Route path="/login" element={<LoginPage />} />
-                        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} /> {/* Usar PrivateRoute */}
+                        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
                         <Route path="/register" element={<RegisterPage />} />
                     </Routes>
                 </div>
