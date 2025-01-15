@@ -1,12 +1,14 @@
-import React, { useContext, useEffect } from 'react';
-import { FaHome, FaUserPlus, FaSignInAlt, FaUser, FaComments, FaSignOutAlt } from 'react-icons/fa';
+import React, { useContext, useEffect, useState } from 'react';
+import { FaHome, FaUserPlus, FaSignInAlt, FaUser, FaComments, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+
 export const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [activeItem, setActiveItem] = React.useState(location.pathname);
+    const [activeItem, setActiveItem] = useState(location.pathname);
     const { isLoggedIn, setIsLoggedIn, userEmail, setUserEmail } = useContext(UserContext);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -72,9 +74,14 @@ export const Navbar = () => {
                     <h1 className="text-3xl font-bold text-white mr-2">Math-IA</h1>
                     <span className="text-yellow-300 text-sm">Asistente Inteligente</span>
                 </div>
-                <ul className="flex space-x-6 items-center">
+                <div className="lg:hidden">
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-yellow-300 focus:outline-none">
+                        <FaBars className="text-2xl" />
+                    </button>
+                </div>
+                <ul className={`lg:flex space-x-6 items-center ${isMenuOpen ? 'block' : 'hidden'} lg:block`}>
                     {navItems.map((item, index) => (
-                        <li key={index}>
+                        <li key={index} className="flex-shrink-0 my-2 lg:my-0">
                             <Link
                                 to={item.path}
                                 className={`flex items-center text-yellow-300 hover:text-white transition-all duration-300 ease-in-out ${
@@ -83,10 +90,11 @@ export const Navbar = () => {
                                 onClick={() => {
                                     setActiveItem(item.path);
                                     if (item.onClick) item.onClick();
+                                    setIsMenuOpen(false);
                                 }}
                             >
                                 <item.icon
-                                    className={`text-xl mr-1 ${
+                                    className={`text-lg mr-1 ${
                                         activeItem === item.path ? 'animate-bounce' : ''
                                     }`}
                                 />
@@ -95,7 +103,7 @@ export const Navbar = () => {
                         </li>
                     ))}
                     {isLoggedIn && userEmail && (
-                        <li className="text-yellow-300 text-sm">
+                        <li className="text-yellow-300 text-sm flex-shrink-0 my-2 lg:my-0">
                             {userEmail}
                         </li>
                     )}

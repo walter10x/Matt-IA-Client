@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaRobot, FaPaperPlane, FaUser } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
+import{chatwindow} from '../styles/chatwindow.css';
 
 const LoadingIndicator = () => (
     <div className="flex items-center justify-center h-8">
@@ -79,59 +80,61 @@ export const ChatWindow = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto my-8 bg-white rounded-lg shadow-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-indigo-800 to-gray-900 text-white p-4 flex items-center">
-                <FaRobot className="mr-2 text-yellow-400 text-2xl" />
-                <span className="font-bold">Chat con MattIA</span>
-            </div>
-            <div className="flex flex-col h-[70vh]">
-                <div className="flex-1 overflow-auto p-4 bg-gradient-to-r from-black to-slate-600">
-                    {messages.map((msg, index) => (
-                        <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
-                            {msg.role === 'user' ? (
-                                <div className="flex items-end">
-                                    <div className="max-w-[70%] bg-gradient-to-r from-black to-slate-600 text-white rounded-lg p-3 shadow mr-2">
-                                        <p className="text-sm">{msg.content}</p>
-                                    </div>
-                                    <FaUser className="text-white mb-6 text-2xl" />
-                                </div>
-                            ) : (
-                                <div className="flex items-end">
-                                    <FaRobot className="text-yellow-400 mr-2 mb-6 text-2xl" />
-                                    <div className="max-w-[70%] bg-gradient-to-r from-black to-slate-600 text-white rounded-lg p-3 shadow">
-                                        <p className="text-sm">{msg.content}</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                    {loading && (
-                        <div className="flex justify-start mb-4">
-                            <FaRobot className="text-yellow-400 mr-2 mb-2" />
-                            <div className="bg-gray-700 rounded-lg p-3 shadow">
-                                <LoadingIndicator />
-                            </div>
-                        </div>
-                    )}
-                    <div ref={messagesEndRef} />
+        <div className="chat-container w-full px-4 my-8">
+            <div className="max-w-[1600px] mx-auto bg-white rounded-lg shadow-2xl overflow-hidden">
+                <div className="bg-gradient-to-r from-indigo-800 to-gray-900 text-white p-4 flex items-center">
+                    <FaRobot className="mr-2 text-yellow-400 text-2xl" />
+                    <span className="font-bold">Chat con MattIA</span>
                 </div>
-                <div className="bg-gradient-to-r from-indigo-800 to-gray-900 p-4 border-t border-gray-700">
-                    <form onSubmit={handleSend} className="flex items-center">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            className="flex-grow bg-white-800 text-black border border-gray-700 rounded-lg p-2 h-12 focus:outline-none focus:ring-2 focus:ring-white mr-2"
-                            placeholder="Escribe un mensaje..."
-                        />
-                        <button 
-                            type="submit"
-                            className="bg-gradient-to-r from-black to-slate-600 text-white rounded-lg px-6 h-12 hover:bg-white transition duration-300 focus:outline-none focus:ring-2 focus:ring-white flex items-center justify-center ml-2"
-                        >
-                            <FaPaperPlane className="mr-2" />
-                            Enviar
-                        </button>
-                    </form>
+                <div className="flex flex-col h-[70vh]">
+                    <div className="flex-1 overflow-auto p-6 bg-gradient-to-r from-black to-slate-600">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
+                                {msg.role === 'user' ? (
+                                    <div className="flex items-end">
+                                        <div className="max-w-[70%] bg-gradient-to-r from-black to-slate-600 text-white rounded-lg p-3 shadow mr-2">
+                                            <p className="text-sm">{msg.content}</p>
+                                        </div>
+                                        <FaUser className="text-white mb-6 text-2xl" />
+                                    </div>
+                                ) : (
+                                    <div className="flex items-end">
+                                        <FaRobot className="text-yellow-400 mr-2 mb-6 text-2xl" />
+                                        <div className="max-w-[70%] bg-gradient-to-r from-black to-slate-600 text-white rounded-lg p-3 shadow">
+                                            <p className="text-sm">{msg.content}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                        {loading && (
+                            <div className="flex justify-start mb-4">
+                                <FaRobot className="text-yellow-400 mr-2 mb-2" />
+                                <div className="bg-gray-700 rounded-lg p-3 shadow">
+                                    <LoadingIndicator />
+                                </div>
+                            </div>
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
+                    <div className="bg-gradient-to-r from-indigo-800 to-gray-900 p-4 border-t border-gray-700">
+                        <form onSubmit={handleSend} className="flex items-center">
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                className="flex-grow bg-white-800 text-black border border-gray-700 rounded-lg p-2 h-12 focus:outline-none focus:ring-2 focus:ring-white mr-2"
+                                placeholder="Escribe un mensaje..."
+                            />
+                            <button 
+                                type="submit"
+                                className="bg-gradient-to-r from-black to-slate-600 text-white rounded-lg px-6 h-12 hover:bg-white transition duration-300 focus:outline-none focus:ring-2 focus:ring-white flex items-center justify-center ml-2"
+                            >
+                                <FaPaperPlane className="mr-2" />
+                                Enviar
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
