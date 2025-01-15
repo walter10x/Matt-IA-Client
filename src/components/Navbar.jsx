@@ -68,16 +68,11 @@ export const Navbar = () => {
     ];
 
     return (
-        <nav className="bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg">
-            <div className="container mx-auto flex justify-between items-center">
-                <div className="flex items-center">
+        <nav className="bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg z-50 relative">
+            <div className="container mx-auto flex justify-between items-center px-4">
+                <div className="flex items-center justify-center flex-grow">
                     <h1 className="text-2xl lg:text-3xl font-bold text-white mr-2">Math-IA</h1>
-                    <span className="text-yellow-300 text-sm">Asistente Inteligente</span>
-                </div>
-                <div className="lg:hidden">
-                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-yellow-300 focus:outline-none">
-                        <FaBars className="text-2xl" />
-                    </button>
+                    <span className="text-yellow-300 text-sm hidden sm:inline">Asistente Inteligente</span>
                 </div>
                 <ul className="hidden lg:flex space-x-6 items-center">
                     {navItems.map((item, index) => (
@@ -107,6 +102,11 @@ export const Navbar = () => {
                         </li>
                     )}
                 </ul>
+                <div className="lg:hidden ml-4">
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-yellow-300 focus:outline-none">
+                        <FaBars className="text-2xl" />
+                    </button>
+                </div>
                 {isMenuOpen && (
                     <div className="absolute top-16 right-0 bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg rounded-lg lg:hidden">
                         <ul className="space-y-4">
