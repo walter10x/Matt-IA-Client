@@ -1,35 +1,55 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import app from '../firebase';
 
 export const RegisterForm = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const auth = getAuth(app);
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        
+        setIsLoading(true);
+        setMessage('');
+
+        if (!email || !password || !username) {
+            setMessage('Email, contraseña y nombre de usuario son requeridos');
+            setIsLoading(false);
+            return;
+        }
+
         try {
+            // Registrar en el backend
             const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password
+                }),
             });
-            
+
             const data = await response.json();
-            
-            if (response.ok) {
-                setMessage('Registro exitoso');
-                navigate('/chat'); // Redirigir al chat después del registro exitoso
-            } else {
-                setMessage(data.error || 'Error en el registro');
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error en el registro');
             }
+
+            setMessage('Usuario registrado exitosamente');
+            setTimeout(() => navigate('/chat'), 1500);
         } catch (error) {
-            setMessage('Error al conectarse al servidor');
+            console.error('Error durante el registro:', error);
+            setMessage(error.message || 'Error al registrarse');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -73,8 +93,9 @@ export const RegisterForm = () => {
                 <button 
                     type="submit" 
                     className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-4 py-2 rounded w-full hover:bg-gradient-to-l hover:from-indigo-600 hover:to-violet-600 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-600"
+                    disabled={isLoading}
                 >
-                    Registrarse
+                    {isLoading ? 'Registrando...' : 'Registrarse'}
                 </button>
 
                 {message && <p className="mt-4 text-center text-red-500">{message}</p>}
