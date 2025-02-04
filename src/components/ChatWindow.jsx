@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaRobot, FaPaperPlane, FaUser } from 'react-icons/fa';
+import { FaRobot, FaPaperPlane, FaUser, FaMicrophone, FaPlus, FaGlobe } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
-import{chatwindow} from '../styles/chatwindow.css';
+import '../styles/chatwindow.css';
 
 const LoadingIndicator = () => (
     <div className="flex items-center justify-center h-8">
@@ -19,123 +19,159 @@ export const ChatWindow = () => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
+    const inputRef = useRef(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    useEffect(scrollToBottom, [messages]);
+    // Cargar mensajes iniciales
+    const fetchMessages = async () => {
+        try {
+            if (!threadId) return;
+
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/threads/${threadId}/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const data = await response.json();
+            const formattedMessages = data.map(msg => ({
+                role: msg.sender,
+                content: msg.content,
+                id: msg._id
+            }));
+            setMessages(formattedMessages);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/messages`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                const data = await response.json();
-                setMessages(data);
-            } catch (error) {
-                console.error('Error fetching messages:', error);
-            }
-        };
-
         fetchMessages();
-    }, []);
+    }, [threadId]);
 
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        if (!input.trim() || loading) return;
 
-        const userMessage = { role: 'user', content: input.trim() };
-        setMessages(prevMessages => [...prevMessages, userMessage]);
+        const newUserMessage = { role: 'user', content: input.trim(), id: Date.now() };
+        setMessages(prev => [...prev, newUserMessage]);
         setInput('');
         setLoading(true);
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/messages`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/ai/ask`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ content: input.trim() }),
+                body: JSON.stringify({
+                    prompt: input.trim(),
+                    thread_id: threadId
+                })
             });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
 
-            const data = await response.json();
-            const assistantMessage = { role: 'assistant', content: data.content };
+            const { assistant_message } = await response.json();
+            const newAssistantMessage = {
+                role: 'assistant',
+                content: assistant_message.content,
+                id: assistant_message._id
+            };
 
-            setMessages(prevMessages => [...prevMessages, assistantMessage]);
+            setMessages(prev => [...prev, newAssistantMessage]);
         } catch (error) {
             console.error("Error al procesar la solicitud:", error);
-            setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: "Lo siento, ha ocurrido un error. Por favor, intenta de nuevo." }]);
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: "Lo siento, ha ocurrido un error. Por favor, intenta de nuevo."
+            }]);
         } finally {
             setLoading(false);
+            inputRef.current?.focus();
+            scrollToBottom();
         }
     };
 
+    useEffect(() => {
+        const handleResize = () => {
+            window.scrollTo(0, document.body.scrollHeight);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
-        <div className="chat-container w-full px-4 my-8">
-            <div className="max-w-[1600px] mx-auto bg-white rounded-lg shadow-2xl overflow-hidden">
-                <div className="bg-gradient-to-r from-indigo-800 to-gray-900 text-white p-4 flex items-center">
-                    <FaRobot className="mr-2 text-yellow-400 text-2xl" />
-                    <span className="font-bold">Chat con MattIA</span>
-                </div>
-                <div className="flex flex-col h-[70vh]">
-                    <div className="flex-1 overflow-auto p-6 bg-gradient-to-r from-black to-slate-600">
-                        {messages.map((msg, index) => (
-                            <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
-                                {msg.role === 'user' ? (
-                                    <div className="flex items-end">
-                                        <div className="max-w-[70%] bg-gradient-to-r from-black to-slate-600 text-white rounded-lg p-3 shadow mr-2">
-                                            <p className="text-sm">{msg.content}</p>
-                                        </div>
-                                        <FaUser className="text-white mb-6 text-2xl" />
-                                    </div>
-                                ) : (
-                                    <div className="flex items-end">
-                                        <FaRobot className="text-yellow-400 mr-2 mb-6 text-2xl" />
-                                        <div className="max-w-[70%] bg-gradient-to-r from-black to-slate-600 text-white rounded-lg p-3 shadow">
-                                            <p className="text-sm">{msg.content}</p>
-                                        </div>
-                                    </div>
-                                )}
+        <div className="flex flex-col h-screen bg-black">
+            {/* Sugerencias iniciales */}
+            <div className="flex space-x-2 p-4 overflow-x-auto">
+                <button className="bg-gray-800 text-white px-4 py-2 rounded-full text-sm">
+                    Crea una ilustración
+                </button>
+                <button className="bg-gray-800 text-white px-4 py-2 rounded-full text-sm">
+                    Hazme una página web
+                </button>
+            </div>
+
+            {/* Área de mensajes */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+                {messages.map((msg) => (
+                    <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        {msg.role === 'user' ? (
+                            <div className="flex items-end">
+                                <div className="max-w-[70%] bg-blue-600 text-white rounded-lg p-3 shadow mr-2">
+                                    <p className="text-sm">{msg.content}</p>
+                                </div>
+                                <FaUser className="text-white mb-6 text-2xl" />
                             </div>
-                        ))}
-                        {loading && (
-                            <div className="flex justify-start mb-4">
-                                <FaRobot className="text-yellow-400 mr-2 mb-2" />
-                                <div className="bg-gray-700 rounded-lg p-3 shadow">
-                                    <LoadingIndicator />
+                        ) : (
+                            <div className="flex items-end">
+                                <FaRobot className="text-yellow-400 mr-2 mb-6 text-2xl" />
+                                <div className="max-w-[70%] bg-gray-800 text-white rounded-lg p-3 shadow">
+                                    <p className="text-sm">{msg.content}</p>
                                 </div>
                             </div>
                         )}
-                        <div ref={messagesEndRef} />
                     </div>
-                    <div className="bg-gradient-to-r from-indigo-800 to-gray-900 p-4 border-t border-gray-700">
-                        <form onSubmit={handleSend} className="flex items-center">
-                            <input
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                className="flex-grow bg-white-800 text-black border border-gray-700 rounded-lg p-2 h-12 focus:outline-none focus:ring-2 focus:ring-white mr-2"
-                                placeholder="Escribe un mensaje..."
-                            />
-                            <button 
-                                type="submit"
-                                className="bg-gradient-to-r from-black to-slate-600 text-white rounded-lg px-6 h-12 hover:bg-white transition duration-300 focus:outline-none focus:ring-2 focus:ring-white flex items-center justify-center ml-2"
-                            >
-                                <FaPaperPlane className="mr-2" />
-                                Enviar
-                            </button>
-                        </form>
+                ))}
+                {loading && (
+                    <div className="flex justify-start mb-4">
+                        <FaRobot className="text-yellow-400 mr-2 mb-2" />
+                        <div className="bg-gray-700 rounded-lg p-3 shadow">
+                            <LoadingIndicator />
+                        </div>
                     </div>
-                </div>
+                )}
+                <div ref={messagesEndRef} />
+            </div>
+
+            {/* Barra inferior */}
+            <div className="p-4 bg-black border-t border-gray-800">
+                <form onSubmit={handleSend} className="flex items-center bg-gray-900 rounded-full px-4 py-2">
+                    <FaPlus className="text-gray-400 mr-2" />
+                    <FaGlobe className="text-gray-400 mr-2" />
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder="Mensaje"
+                        className="flex-grow bg-transparent text-white placeholder-gray-500 focus:outline-none"
+                        autoFocus
+                    />
+                    <button 
+                        type="submit"
+                        disabled={loading}
+                        className="ml-2 text-blue-400 hover:text-blue-500 transition-colors disabled:opacity-50"
+                    >
+                        <FaPaperPlane />
+                    </button>
+                    <FaMicrophone className="text-gray-400 ml-2" />
+                </form>
             </div>
         </div>
     );

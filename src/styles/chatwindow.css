@@ -1,11 +1,26 @@
-.chat-container {
-    max-width: 100%;
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
 }
 
-@media (min-width: 1600px) {
-    .chat-container {
-        max-width: 1000px;
-        margin-left: auto;
-        margin-right: auto;
-    }
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 3px;
+}
+
+input::placeholder {
+    color: #888;
+}
+
+button {
+    outline: none;
+}
+
+.flex.space-x-2 button {
+    white-space: nowrap;
 }

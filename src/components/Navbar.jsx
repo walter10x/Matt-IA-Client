@@ -11,48 +11,35 @@ export const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetchUserEmail(token);
-        }
-    }, []);
-
-    const fetchUserEmail = async (token) => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/me`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setUserEmail(data.user.email);
-                setIsLoggedIn(true);
-            } else {
-                console.error('Error al obtener el email del usuario:', await response.text());
-                setIsLoggedIn(false);
-                setUserEmail(null);
-            }
-        } catch (error) {
-            console.error('Error de red al obtener el email:', error);
+        // Cargar datos directamente desde localStorage
+        const storedEmail = localStorage.getItem('email');
+        const storedToken = localStorage.getItem('token');
+        
+        if (storedToken && storedEmail) {
+            setIsLoggedIn(true);
+            setUserEmail(storedEmail);
+        } else {
             setIsLoggedIn(false);
             setUserEmail(null);
         }
-    };
+    }, []);
 
     const handleLogout = () => {
+        // Limpiar localStorage y actualizar estado
         localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        localStorage.removeItem('userInfo');
         setIsLoggedIn(false);
         setUserEmail(null);
-        setActiveItem('/');
         navigate('/');
     };
 
     const handleLogin = () => {
         navigate('/login');
     };
+
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    const displayedEmail = userEmail || userInfo.email || '';
 
     const navItems = [
         { name: 'Home', icon: FaHome, path: '/' },
@@ -74,6 +61,7 @@ export const Navbar = () => {
                     <h1 className="text-2xl lg:text-3xl font-bold text-white mr-2">Math-IA</h1>
                     <span className="text-yellow-300 text-sm hidden sm:inline">Asistente Inteligente</span>
                 </div>
+                
                 <ul className="hidden lg:flex space-x-6 items-center">
                     {navItems.map((item, index) => (
                         <li key={index} className="flex-shrink-0 my-2 lg:my-0">
@@ -87,26 +75,26 @@ export const Navbar = () => {
                                     if (item.onClick) item.onClick();
                                 }}
                             >
-                                <item.icon
-                                    className={`text-lg mr-1 ${
-                                        activeItem === item.path ? 'animate-bounce' : ''
-                                    }`}
-                                />
+                                <item.icon className={`text-lg mr-1 ${activeItem === item.path ? 'animate-bounce' : ''}`} />
                                 <span className="text-sm">{item.name}</span>
                             </Link>
                         </li>
                     ))}
-                    {isLoggedIn && userEmail && (
+                    
+                    {isLoggedIn && displayedEmail && (
                         <li className="text-yellow-300 text-sm flex-shrink-0 my-2 lg:my-0">
-                            {userEmail}
+                            {displayedEmail}
                         </li>
                     )}
                 </ul>
+
+                {/* Menú móvil */}
                 <div className="lg:hidden ml-4">
                     <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-yellow-300 focus:outline-none">
                         <FaBars className="text-2xl" />
                     </button>
                 </div>
+
                 {isMenuOpen && (
                     <div className="absolute top-16 right-0 bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg rounded-lg lg:hidden">
                         <ul className="space-y-4">
@@ -123,18 +111,15 @@ export const Navbar = () => {
                                             setIsMenuOpen(false);
                                         }}
                                     >
-                                        <item.icon
-                                            className={`text-lg mr-1 ${
-                                                activeItem === item.path ? 'animate-bounce' : ''
-                                            }`}
-                                        />
+                                        <item.icon className={`text-lg mr-1 ${activeItem === item.path ? 'animate-bounce' : ''}`} />
                                         <span className="text-sm">{item.name}</span>
                                     </Link>
                                 </li>
                             ))}
-                            {isLoggedIn && userEmail && (
+                            
+                            {isLoggedIn && displayedEmail && (
                                 <li className="text-yellow-300 text-sm flex-shrink-0">
-                                    {userEmail}
+                                    {displayedEmail}
                                 </li>
                             )}
                         </ul>

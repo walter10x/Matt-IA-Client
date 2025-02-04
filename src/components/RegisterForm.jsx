@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import GoogleSignInButton from './GoogleSignInButton';
+
 import app from '../firebase';
 
 export const RegisterForm = () => {
@@ -99,6 +101,7 @@ export const RegisterForm = () => {
                 </button>
 
                 {message && <p className="mt-4 text-center text-red-500">{message}</p>}
+                <GoogleSignInButton />
 
                 <p className="mt-4 text-center text-gray-600">
                     ¿Ya tienes una cuenta?{' '}

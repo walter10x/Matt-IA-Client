@@ -6,8 +6,9 @@ import { RegisterPage } from './pages/RegisterPage';
 import { LoginPage } from './pages/LoginPage';
 import { Profile } from './pages/Profile';
 import { Footer } from './components/Footer';
-import { ChatPage } from './pages/ChatPage'; // Importa ChatPage en lugar de ChatWindow
+import { ChatPage } from './pages/ChatPage';
 import PrivateRoute from './components/PrivateRoute';
+import GoogleAuthCallback from './components/GoogleAuthCallback';
 
 const App = () => {
     return (
@@ -17,7 +18,8 @@ const App = () => {
                 <div className="flex-1 overflow-auto">
                     <Routes>
                         <Route path="/" element={<HomePage />} />
-                        <Route path="/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} /> {/* Usa ChatPage aquí */}
+                        <Route path="/login/google/callback" element={<GoogleAuthCallback />} />
+                        <Route path="/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
                         <Route path="/register" element={<RegisterPage />} />
