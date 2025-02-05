@@ -4,7 +4,7 @@ import { Navbar } from './components/Navbar';
 import { HomePage } from './pages/HomePage';
 import { RegisterPage } from './pages/RegisterPage';
 import { LoginPage } from './pages/LoginPage';
-import { Profile } from './pages/Profile';
+import { Profile } from './components/Profile';
 import { Footer } from './components/Footer';
 import { ChatPage } from './pages/ChatPage';
 import PrivateRoute from './components/PrivateRoute';
@@ -14,7 +14,7 @@ const App = () => {
     return (
         <Router>
             <div className="flex flex-col h-screen"> 
-                <Navbar />
+                <Navbar /> {/* Volvemos a agregar esta línea */}
                 <div className="flex-1 overflow-auto">
                     <Routes>
                         <Route path="/" element={<HomePage />} />

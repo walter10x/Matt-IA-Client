@@ -108,7 +108,7 @@ export const ChatWindow = () => {
     return (
         <div className="flex flex-col h-screen bg-black">
             {/* Sugerencias iniciales */}
-            <div className="flex space-x-2 p-4 overflow-x-auto">
+            <div className="flex space-x-2 p-7 overflow-x-auto">
                 <button className="bg-gray-800 text-white px-4 py-2 rounded-full text-sm">
                     Crea una ilustración
                 </button>

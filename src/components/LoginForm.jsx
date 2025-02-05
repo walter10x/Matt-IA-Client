@@ -21,11 +21,12 @@ export const LoginForm = () => {
                 },
                 body: JSON.stringify({ email, password }),
             });
-            
+          
             const data = await response.json();
+            console.log(data)
             
-            if (response.ok && data.access_token) {
-                localStorage.setItem('token', data.access_token);
+            if (response.ok && data.firebase_token) {
+                localStorage.setItem('token', data.firebase_token);
                 setIsLoggedIn(true);
                 setUserEmail(email);
                 setMessage('Inicio de sesión exitoso');
