@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FaHome, FaUserPlus, FaSignInAlt, FaUser, FaComments, FaSignOutAlt, FaBars } from 'react-icons/fa';
+import { FaUserPlus, FaBars, FaUser,FaChevronLeft } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
@@ -24,35 +24,15 @@ export const Navbar = () => {
         }
     }, []);
 
-    const handleLogout = () => {
-        // Limpiar localStorage y actualizar estado
-        localStorage.removeItem('token');
-        localStorage.removeItem('email');
-        localStorage.removeItem('userInfo');
-        setIsLoggedIn(false);
-        setUserEmail(null);
-        navigate('/');
-    };
+    // Con esta modificación solo dejamos el elemento Register en el navbar.
+    const navItems = [
+        { name: 'Register', icon: FaUser, path: '/register' },
+    ];
 
-    const handleLogin = () => {
-        navigate('/login');
-    };
-
+    // Si deseas eliminar también la función de logout o login, puedes quitarla.
+    // En este ejemplo se mantiene la lógica para cargar el email del usuario.
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
     const displayedEmail = userEmail || userInfo.email || '';
-
-    const navItems = [
-        { name: 'Home', icon: FaHome, path: '/' },
-        { name: 'Chat', icon: FaComments, path: '/chat' },
-        { name: 'Profile', icon: FaUser, path: '/profile' },
-        { name: 'Register', icon: FaUserPlus, path: '/register' },
-        {
-            name: isLoggedIn ? 'Cerrar Sesión' : 'Login',
-            icon: isLoggedIn ? FaSignOutAlt : FaSignInAlt,
-            path: isLoggedIn ? '/' : '/login',
-            onClick: isLoggedIn ? handleLogout : handleLogin,
-        },
-    ];
 
     return (
         <nav className="bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg z-50 relative ">
@@ -62,18 +42,16 @@ export const Navbar = () => {
                     <span className="text-yellow-300 text-sm hidden sm:inline">Asistente Inteligente</span>
                 </div>
                 
-                <ul className="hidden lg:flex space-x-6 items-center">
+                {/* Menú de escritorio */}
+                <ul className="hidden lg:flex space-x-6 items-center ">
                     {navItems.map((item, index) => (
-                        <li key={index} className="flex-shrink-0 my-2 lg:my-0">
+                        <li key={index} className="flex-shrink-0 my-2 lg:my-0 ">
                             <Link
                                 to={item.path}
-                                className={`flex items-center text-yellow-300 hover:text-white transition-all duration-300 ease-in-out ${
+                                className={`flex items-center  text-yellow-300 hover:text-white transition-all duration-300 ease-in-out ${
                                     activeItem === item.path ? 'text-white scale-110' : ''
                                 }`}
-                                onClick={() => {
-                                    setActiveItem(item.path);
-                                    if (item.onClick) item.onClick();
-                                }}
+                                onClick={() => setActiveItem(item.path)}
                             >
                                 <item.icon className={`text-lg mr-1 ${activeItem === item.path ? 'animate-bounce' : ''}`} />
                                 <span className="text-sm">{item.name}</span>
@@ -88,12 +66,12 @@ export const Navbar = () => {
                     )}
                 </ul>
 
-                {/* Menú móvil */}
+                {/* Menú móvil
                 <div className="lg:hidden ml-4">
-                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-yellow-300 focus:outline-none">
-                        <FaBars className="text-2xl" />
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="absolute -right-1 top-4 bg-slate-600 text-white p-1.5 rounded-full hover:bg-slate-700">
+                        <FaChevronLeft  className="text-xl" />
                     </button>
-                </div>
+                </div> */}
 
                 {isMenuOpen && (
                     <div className="absolute top-16 right-0 bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg rounded-lg lg:hidden">
@@ -107,7 +85,6 @@ export const Navbar = () => {
                                         }`}
                                         onClick={() => {
                                             setActiveItem(item.path);
-                                            if (item.onClick) item.onClick();
                                             setIsMenuOpen(false);
                                         }}
                                     >
