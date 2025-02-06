@@ -55,7 +55,7 @@ export const Navbar = () => {
     ];
 
     return (
-        <nav className="bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg z-50 relative">
+        <nav className="bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg z-50 relative ">
             <div className="container mx-auto flex justify-between items-center px-4">
                 <div className="flex items-center justify-center flex-grow">
                     <h1 className="text-2xl lg:text-3xl font-bold text-white mr-2">Math-IA</h1>

@@ -8,7 +8,7 @@ export const Profile = () => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
   
   return (
-    <div className="profile-component p-6 border rounded shadow max-w-lg mx-auto">
+    <div className="profile-component p-7 border rounded mt-20 shadow max-w-lg mx-auto">
       <h2 className="text-2xl font-semibold mb-4">Información del Perfil</h2>
       <p><strong>Email:</strong> {userEmail}</p>
       {userInfo.name && <p><strong>Nombre:</strong> {userInfo.name}</p>}

@@ -6,7 +6,6 @@ import { UserContext } from '../context/UserContext';
 
 export const ChatPage = () => {
     const [selectedChat, setSelectedChat] = useState(null);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const { isLoggedIn } = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -18,19 +17,11 @@ export const ChatPage = () => {
 
     return (
         <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-            {/* Sidebar */}
-            <div className="w-64 transition-all duration-300 ease-in-out md:w-64">
-                <Sidebar 
-                    onSelectChat={setSelectedChat} 
-                    selectedChat={selectedChat}
-                    isSidebarOpen={isSidebarOpen}
-                />
-            </div>
-
-            {/* Chat Window */}
+            {/* Chat Window sin Sidebar */}
             <div className="flex-1 flex flex-col">
                 <ChatWindow selectedChat={selectedChat} />
             </div>
         </div>
     );
 };
+
