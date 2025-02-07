@@ -56,7 +56,7 @@ export const Sidebar = () => {
       {isMobile && !isOpen && (
         <button
           onClick={toggleSidebar}
-          className="fixed top-4 left-4 z-50 bg-gray-700 text-white p-2 rounded-full shadow-lg"
+          className="fixed top-4 left-4 z-50 bg-gray-700 text-white p-2 rounded-full shadow-lg w-10 h-10 flex items-center justify-center"
         >
           {/* Usamos el ícono de ChevronRight directamente */}
           <span className="text-xl">&#8250;</span>
@@ -98,8 +98,9 @@ export const Sidebar = () => {
           showUserMenu={showUserMenu}
           setShowUserMenu={setShowUserMenu}
           handleLogout={() => {
+            localStorage.removeItem("userInfo")
             localStorage.removeItem("token");
-            localStorage.removeItem("email");
+            localStorage.removeItem("userEmail");
             setIsLoggedIn(false);
           }}
           userEmail={userEmail}

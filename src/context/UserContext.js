@@ -1,41 +1,45 @@
-import { createContext, useState, useEffect } from "react";
-import { auth } from "../firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth"; // 🔥 Importamos métodos necesarios
+import { createContext, useState, useEffect } from 'react';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+  // Estado para determinar si el usuario está logueado
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Información del email del usuario, leída de localStorage
   const [userEmail, setUserEmail] = useState(null);
+  // Flag que indica que ya se revisó la existencia del token en localStorage
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    // 🔥 Observador de Firebase para mantener la sesión activa tras refrescar
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+    try {
+      const token = localStorage.getItem('token');
+      const email = localStorage.getItem('email');
+      if (token && email) {
         setIsLoggedIn(true);
-        setUserEmail(user.email);
-        localStorage.setItem("token", user.accessToken); // 🔥 Opcionalmente guardar el token
-        localStorage.setItem("userEmail", user.email);
+        setUserEmail(email);
       } else {
-        logout(); // Si no hay usuario, cerrar sesión
+        setIsLoggedIn(false);
+        setUserEmail(null);
       }
-      setAuthChecked(true);
-    });
-
-    return () => unsubscribe(); // Cleanup para evitar memory leaks
+      
+    } catch (error) {
+      console.error("Error reading localStorage", error);
+      setIsLoggedIn(false);
+      setUserEmail(null);
+    }
+    setAuthChecked(true);
   }, []);
-
-  const logout = async () => {
-    await signOut(auth); // 🔥 Cierra sesión en Firebase
-    localStorage.removeItem("token");
-    localStorage.removeItem("userEmail");
-    setIsLoggedIn(false);
-    setUserEmail(null);
-  };
+  
 
   return (
-    <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn, userEmail, setUserEmail, authChecked, logout }}>
+    <UserContext.Provider
+      value={{
+        isLoggedIn,
+        setIsLoggedIn,
+        userEmail,
+        setUserEmail,
+        authChecked
+      }}>
       {children}
     </UserContext.Provider>
   );

@@ -1,3 +1,4 @@
+// src/components/Sidebar/SidebarUserInfo.jsx
 import React from "react";
 import { FaUser, FaChevronRight, FaSignOutAlt } from "react-icons/fa";
 
@@ -9,23 +10,23 @@ export const SidebarUserInfo = ({
   userEmail
 }) => {
   return (
-    <div className="absolute bottom-12 w-full px-2">
+    <div className="absolute bottom-12 w-full px-4">
       <div
         onClick={() => setShowUserMenu(!showUserMenu)}
-        className="flex items-center justify-between cursor-pointer text-white hover:bg-slate-700 rounded p-2 gap-2"
+        className="flex items-center cursor-pointer text-white hover:bg-slate-700 rounded p-2 gap-2"
       >
-        <div className="flex items-center">
-          <FaUser className="text-xl ml-3" />
-          {isFullyOpen && (
-            <span className="ml-2 text-sm">{userEmail}</span>
-          )}
+        <div className="w-12 flex justify-center">
+          <FaUser className="text-2xl mr-5" />
         </div>
         {isFullyOpen && (
-          <FaChevronRight
-            className={`transform transition-transform ${
-              showUserMenu ? "rotate-90" : ""
-            }`}
-          />
+          <>
+            <span className="flex-1 text-sm">{userEmail}</span>
+            <FaChevronRight
+              className={`transform transition-transform ${
+                showUserMenu ? "rotate-90" : ""
+              }`}
+            />
+          </>
         )}
       </div>
 
@@ -43,3 +44,5 @@ export const SidebarUserInfo = ({
     </div>
   );
 };
+
+
