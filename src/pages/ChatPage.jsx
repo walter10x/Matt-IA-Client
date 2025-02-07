@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sidebar } from '../components/Sidebar';
+import { Sidebar } from '../components/Sidebar/Sidebar';
 import { ChatWindow } from '../components/ChatWindow';
 import { UserContext } from '../context/UserContext';
 
@@ -17,7 +17,15 @@ export const ChatPage = () => {
 
     return (
         <div className="flex h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-            {/* Chat Window sin Sidebar */}
+            {/* Sidebar */}
+            <div className="w-64 transition-all duration-300 ease-in-out md:w-64">
+                <Sidebar 
+                    onSelectChat={setSelectedChat} 
+                    selectedChat={selectedChat}
+                />
+            </div>
+
+            {/* Chat Window */}
             <div className="flex-1 flex flex-col">
                 <ChatWindow selectedChat={selectedChat} />
             </div>

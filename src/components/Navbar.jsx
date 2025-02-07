@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FaUserPlus, FaBars, FaUser,FaChevronLeft } from 'react-icons/fa';
+import { FaUserPlus, FaBars, FaUser, FaChevronLeft } from 'react-icons/fa';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 
@@ -66,12 +66,12 @@ export const Navbar = () => {
                     )}
                 </ul>
 
-                {/* Menú móvil
+                {/* Menú móvil */}
                 <div className="lg:hidden ml-4">
                     <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="absolute -right-1 top-4 bg-slate-600 text-white p-1.5 rounded-full hover:bg-slate-700">
                         <FaChevronLeft  className="text-xl" />
                     </button>
-                </div> */}
+                </div>
 
                 {isMenuOpen && (
                     <div className="absolute top-16 right-0 bg-gradient-to-r from-black to-slate-500 p-4 shadow-lg rounded-lg lg:hidden">

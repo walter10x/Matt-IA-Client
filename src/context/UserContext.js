@@ -1,28 +1,35 @@
-import { createContext, useState, useEffect } from "react";
-import { auth } from "../firebase"; // Asegúrate de importar la instancia correcta de Firebase
-import { onAuthStateChanged } from "firebase/auth";
+import { createContext, useState, useEffect } from 'react';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+  // Estado para determinar si el usuario está logueado
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Información del email del usuario, leída de localStorage
   const [userEmail, setUserEmail] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false); // Para evitar parpadeos en la UI
+  // Flag que indica que ya se revisó la existencia del token en localStorage
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+    try {
+      const token = localStorage.getItem('token');
+      const email = localStorage.getItem('email');
+      if (token && email) {
         setIsLoggedIn(true);
-        setUserEmail(user.email);
+        setUserEmail(email);
       } else {
         setIsLoggedIn(false);
         setUserEmail(null);
       }
-      setAuthChecked(true); // Indica que ya se verificó la autenticación
-    });
-
-    return () => unsubscribe(); // Limpiar el listener al desmontar
+      
+    } catch (error) {
+      console.error("Error reading localStorage", error);
+      setIsLoggedIn(false);
+      setUserEmail(null);
+    }
+    setAuthChecked(true);
   }, []);
+  
 
   return (
     <UserContext.Provider
@@ -31,9 +38,8 @@ export const UserProvider = ({ children }) => {
         setIsLoggedIn,
         userEmail,
         setUserEmail,
-        authChecked,
-      }}
-    >
+        authChecked
+      }}>
       {children}
     </UserContext.Provider>
   );
