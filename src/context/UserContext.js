@@ -7,46 +7,47 @@ export const UserProvider = ({ children }) => {
   const [userEmail, setUserEmail] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // Función para actualizar el estado al leer localStorage
-  const checkAuthStatus = () => {
-    const token = localStorage.getItem('token');
-    const email = localStorage.getItem('email');
-
-    if (token && token !== 'undefined' && token !== 'null' && email) {
-      setIsLoggedIn(true);
-      setUserEmail(email);
-    } else {
-      setIsLoggedIn(false);
-      setUserEmail(null);
-    }
-    setAuthChecked(true);
-  };
-
-  // Ejecutar checkAuthStatus al montar
   useEffect(() => {
-    checkAuthStatus();
-  }, []);
+    const verifyToken = async () => {
+      const token = localStorage.getItem('token');
+      const email = localStorage.getItem('email');
 
-  // Nuevo: Escuchar cambios en localStorage
-  useEffect(() => {
-    const handleStorageChange = () => {
-      checkAuthStatus();
+      if (!token || !email) {
+        setIsLoggedIn(false);
+        setUserEmail(null);
+        setAuthChecked(true);
+        return;
+      }
+
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/verify-token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+
+        if (response.ok) {
+          setIsLoggedIn(true);
+          setUserEmail(email);
+        } else {
+          console.warn('Token inválido o expirado, cerrando sesión');
+          localStorage.removeItem('token');
+          localStorage.removeItem('email');
+          setIsLoggedIn(false);
+          setUserEmail(null);
+        }
+      } catch (error) {
+        console.error('Error al verificar el token:', error);
+      }
+
+      setAuthChecked(true);
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    verifyToken();
   }, []);
 
   return (
-    <UserContext.Provider
-      value={{
-        isLoggedIn,
-        setIsLoggedIn,
-        userEmail,
-        setUserEmail,
-        authChecked,
-        checkAuthStatus, // Lo exponemos para poder llamarlo manualmente
-      }}>
+    <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn, userEmail, setUserEmail, authChecked }}>
       {children}
     </UserContext.Provider>
   );
